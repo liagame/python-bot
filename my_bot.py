@@ -15,8 +15,8 @@ class MyBot(Bot):
         print(map_data)
 
     def process_state(self, state_update, api):
-        for player in state_update['players']:
-            id = player['id']
+        for unit in state_update['units']:
+            id = unit['id']
 
             if self.count % 10 == 0 or self.count % 11 == 0:
                 # Rotation
@@ -38,12 +38,12 @@ class MyBot(Bot):
                     api.set_thrust_speed(id, ThrustSpeed.NONE)
 
             # Shoot all three bullets when they are loaded
-            if player['nBullets'] == 3:
+            if unit['nBullets'] == 3:
                 self.should_shoot = True
-            elif player['nBullets'] == 0:
+            elif unit['nBullets'] == 0:
                 self.should_shoot = False
 
-            if player['canShoot'] and self.should_shoot:
+            if unit['canShoot'] and self.should_shoot:
                 api.shoot(id)
 
             self.count += 1

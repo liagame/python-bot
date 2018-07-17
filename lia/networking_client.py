@@ -1,9 +1,10 @@
 import ssl
 import traceback
-
+import argparse
 import websocket
 import json
 from lia.api import Api
+
 
 try:
     import thread
@@ -14,16 +15,25 @@ except ImportError:
 class NetworkingClient:
 
     def __init__(self, bot):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-p", "--port", help="specify port", required=False)
+        parser.add_argument("-i", "--id", help="unique identifier", required=False)
+        args = parser.parse_args()
+
+        if args.port is None: args.port = "8887"
+        if args.id is None: args.id = ""
+
         self.bot = bot
-        self.ws = websocket.WebSocketApp("ws://localhost:8887",
+        self.ws = websocket.WebSocketApp("ws://localhost:" + args.port,
                                          on_message=self.on_message,
                                          on_error=self.on_error,
                                          on_close=self.on_close,
-                                         on_open=self.on_open)
+                                         on_open=self.on_open,
+                                         header={'Id': args.id})
 
     def connect(self):
         self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE,
-                               "check_hostname": False})
+                                    "check_hostname": False})
 
     def on_message(self, ws, message):
         data = json.loads(message)

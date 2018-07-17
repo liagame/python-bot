@@ -10,14 +10,14 @@ class Api:
         self.rotationEvents = []
         self.shootEvents = []
 
-    def set_thrust_speed(self, player_id, speed):
-        self.thrustSpeedEvents.append({"playerId": player_id, "speed": speed.name})
+    def set_thrust_speed(self, unit_id, speed):
+        self.thrustSpeedEvents.append({"unitId": unit_id, "speed": speed.name})
 
-    def set_rotation_speed(self, player_id, rotation):
-        self.rotationEvents.append({"playerId": player_id, "rotation": rotation.name})
+    def set_rotation_speed(self, unit_id, rotation):
+        self.rotationEvents.append({"unitId": unit_id, "rotation": rotation.name})
 
-    def shoot(self, player_id):
-        self.shootEvents.append({"playerId": player_id})
+    def shoot(self, unit_id):
+        self.shootEvents.append({"unitId": unit_id})
 
 
 class ThrustSpeed(Enum):
