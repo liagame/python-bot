@@ -31,6 +31,8 @@ class NetworkingClient:
                                          on_open=self.on_open,
                                          header={'Id': args.id})
 
+        self.finished = False
+
     def connect(self):
         self.ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE,
                                     "check_hostname": False})
@@ -52,11 +54,15 @@ class NetworkingClient:
             traceback.print_exc()
 
     def on_error(self, ws, error):
-        traceback.print_exc()
-        exit(1)
+        if not self.finished:
+            traceback.print_exc()
+            exit(1)
 
     def on_close(self, ws):
         print("Connection closed. Exiting...")
+        self.finished = True
+        exit(0)
+
 
     def on_open(self, ws):
         print("Connected!")
