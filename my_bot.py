@@ -1,5 +1,7 @@
+import asyncio
+
 from lia.callable import Bot
-from lia.networking_client import NetworkingClient
+from lia.networking_client import connect
 from lia.api import *
 
 
@@ -9,8 +11,10 @@ class MyBot(Bot):
         print(map_data)
 
     def process_state(self, state_update, api):
-        print(state_update)
+        for unit in state_update["units"]:
+            api.shoot(unit["id"])
+
 
 if __name__ == "__main__":
-    client = NetworkingClient(MyBot())
-    client.connect()
+    asyncio.get_event_loop().run_until_complete(connect(MyBot()))
+
