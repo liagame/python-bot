@@ -1,7 +1,7 @@
 import asyncio
 import random
 
-from lia.callable import Bot
+from lia.bot import Bot
 from lia.networking_client import connect
 
 
@@ -13,17 +13,17 @@ from lia.networking_client import connect
 class MyBot(Bot):
 
     # Called only once when the game is initialized holding data about the map.
-    def process_map_data(self, map_data):
+    def process_game_environment(self, game_environment):
         # We store the map that game uses in our variable.
         # https://docs.liagame.com/api/#mapdata for the data you receive here
-        self.map = map_data["map"]
+        self.map = game_environment["map"]
 
     # Repeatedly called 10 times per second from game engine with
     # game state updates. Here is where all the things happen.
-    def process_state(self, state_update, api):
+    def process_game_state(self, game_state, api):
 
         # Iterate through the data of all of your units
-        for unit in state_update["units"]:
+        for unit in game_state["units"]:
 
             # navigationPath is a field of your unit that shows the path
             # on which the unit is currently using if you have sent it
@@ -48,7 +48,7 @@ class MyBot(Bot):
         while True:
             x = random.randint(min_distance_to_map_edge, len(self.map) - min_distance_to_map_edge)
             y = random.randint(min_distance_to_map_edge, len(self.map[0]) - min_distance_to_map_edge)
-            # if map at (x,y) is False it means there is no obstacle on that field
+            # If map at (x,y) is False it means there is no obstacle on that field
             if self.map[x][y] is False:
                 return x, y
 
