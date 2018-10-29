@@ -36,24 +36,25 @@ class MyBot(Bot):
             # is empty the unit is not going anywhere automatically. Here, if the unit
             # is not going anywhere we choose a new location and send it there.
             if len(unit["navigationPath"]) == 0:
-                # Generate a point on the map where there is no obstacle.
-                x, y = self.random_valid_point_on_map()
+
+                # Find a point on the map where there is no obstacle by randomly generating
+                # x and y values until the
+                x = None
+                y = None
+                # Generate new x and y until you get a position that is not placed on an obstacle.
+                while True:
+                    x = random.randint(0, len(self.map) - 1)
+                    y = random.randint(0, len(self.map[0]) - 1)
+                    # False means that on (x,y) there is no obstacle.
+                    if self.map[x][y] is False:
+                        break
+
                 # Make the unit go to the chosen x (point[0]) and y (point[1]).
                 api.navigation_start(unit["id"], x, y)
 
             # If the unit sees an opponent then make it shoot.
             if len(unit["opponentsInView"]) > 0:
                 api.shoot(unit["id"])
-
-    # Finds a random point on the map where there is no obstacle.
-    def random_valid_point_on_map(self):
-        # Generate new x and y until you get a position that is not placed on an obstacle.
-        while True:
-            x = random.randint(0, len(self.map) - 1)
-            y = random.randint(0, len(self.map[0]) - 1)
-            # False means that on (x,y) there is no obstacle.
-            if self.map[x][y] is False:
-                return x, y
 
 
 # This connects your bot to Lia game engine, don't change it.
