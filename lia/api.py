@@ -12,6 +12,7 @@ class Api:
         self.shootEvents = []
         self.navigationStartEvents = []
         self.navigationStopEvents = []
+        self.saySomethingEvents = []
 
     def get_index(self):
         index = self.current_index
@@ -32,6 +33,9 @@ class Api:
 
     def navigation_stop(self, unit_id):
         self.navigationStopEvents.append({"index": self.get_index(), "unitId": unit_id})
+
+    def say_something(self, unit_id, text):
+        self.saySomethingEvents.append({"index": self.get_index(), "unitId": unit_id, "text": text})
 
 
 class Speed(Enum):

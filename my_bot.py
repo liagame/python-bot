@@ -5,43 +5,36 @@ from lia.bot import Bot
 from lia.networking_client import connect
 
 
-# This is your bot that will play the game for you.
-#
-# Implementation below keeps sending units to random locations on the map
-# and makes them shoot when they see opponents.
+# Here is where you control your bot. Initial implementation keeps sending units
+# to random locations on the map and makes them shoot when they see opponents.
 class MyBot(Bot):
 
-    # This method is called only once at the beginning of the game and holds the basic
-    # information about the game environment.
+    # In this method we receive the basic information about the game environment.
     # - GameEnvironment reference: TODO link
     def process_game_environment(self, game_environment):
 
-        # Here we will store the map that the game will be played on. Map has values set
-        # to True where there is an obstacle. You can access (x,y) coordinate by calling
-        # map[x][y] and x=0, y=0 is placed at the bottom left corner.
+        # Here we store the map as a 2D array of booleans. If map[x][y] equals True that
+        # means that at (x,y) there is an obstacle. x=0, y=0 points to bottom left corner.
         self.map = game_environment["map"]
 
-    # This method is the main part of your bot. It is called 10 times per game seconds and
-    # it holds game's current state and the Api object which you use to control your units.
+    # This is the main method where you control your bot. 10 times per game second it
+    # receives current game state. Use Api object to call actions on your units.
     # - GameState reference: TODO link
     # - Api reference:       TODO link
     def process_game_state(self, game_state, api):
 
-        # First we iterate through all of our units that are still alive.
+        # We iterate through all of our units that are still alive.
         for unit in game_state["units"]:
 
-            # With api.navigationStart(...) method you can send your units to go to a
-            # specified point on the map all by themselves. If they are currently going
-            # somewhere then their path is stored in navigationPath field. If the field
-            # is empty the unit is not going anywhere automatically. Here, if the unit
-            # is not going anywhere we choose a new location and send it there.
+            # If the unit is not going anywhere, we choose a new valid point on the
+            # map and send the unit there.
             if len(unit["navigationPath"]) == 0:
 
-                # Find a point on the map where there is no obstacle by randomly generating
-                # x and y values until the
                 x = None
                 y = None
-                # Generate new x and y until you get a position that is not placed on an obstacle.
+
+                # Generate new x and y until you get a position on the map where there
+                # is no obstacle.
                 while True:
                     x = random.randint(0, len(self.map) - 1)
                     y = random.randint(0, len(self.map[0]) - 1)
@@ -49,14 +42,17 @@ class MyBot(Bot):
                     if self.map[x][y] is False:
                         break
 
-                # Make the unit go to the chosen x (point[0]) and y (point[1]).
+                # Make the unit go to the chosen x and y.
                 api.navigation_start(unit["id"], x, y)
 
             # If the unit sees an opponent then make it shoot.
             if len(unit["opponentsInView"]) > 0:
                 api.shoot(unit["id"])
 
+                # Don't forget to make your unit brag. :)
+                api.say_something(unit["id"], "I see you!")
 
-# This connects your bot to Lia game engine, don't change it.
+
+# Connects your bot to Lia game engine, don't change it.
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(connect(MyBot()))
