@@ -3,6 +3,7 @@ import json
 import traceback
 import websockets
 from lia.api import Api
+from lia.constants import load_constants
 
 
 async def connect(bot):
@@ -25,6 +26,7 @@ async def connect(bot):
                 response = Api(data['uid'])
                 try:
                     if data['type'] == 'GAME_ENVIRONMENT':
+                        load_constants(data["constants"])
                         bot.process_game_environment(data)
 
                     elif data['type'] == 'GAME_STATE':

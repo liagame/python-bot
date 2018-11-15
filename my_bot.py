@@ -2,6 +2,7 @@ import asyncio
 import random
 
 from lia.api import *
+from lia import constants
 from lia import math_util
 from lia.bot import Bot
 from lia.networking_client import connect
