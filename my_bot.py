@@ -13,7 +13,7 @@ from lia.networking_client import connect
 class MyBot(Bot):
 
     # In this method we receive the basic information about the game environment.
-    # - GameEnvironment reference: TODO link
+    # - GameEnvironment reference: https://docs.liagame.com/api/#gameenvironment
     def process_game_environment(self, game_environment):
 
         # Here we store the map as a 2D array of booleans. If map[x][y] equals True that
@@ -22,8 +22,8 @@ class MyBot(Bot):
 
     # This is the main method where you control your bot. 10 times per game second it
     # receives current game state. Use Api object to call actions on your units.
-    # - GameState reference: TODO link
-    # - Api reference:       TODO link
+    # - GameState reference: https://docs.liagame.com/api/#gamestate
+    # - Api reference:       https://docs.liagame.com/api/#api-object
     def process_game_state(self, game_state, api):
 
         # We iterate through all of our units that are still alive.
