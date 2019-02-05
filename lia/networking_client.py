@@ -25,12 +25,11 @@ async def connect(bot):
 
                 response = Api(data['uid'])
                 try:
-                    if data['type'] == 'GAME_ENVIRONMENT':
+                    if data['type'] == 'GAME_SETUP':
                         load_constants(data["constants"])
-                        bot.process_game_environment(data)
 
                     elif data['type'] == 'GAME_STATE':
-                        bot.process_game_state(data, response)
+                        bot.update(data, response)
 
                     await websocket.send(json.dumps(response.__dict__))
                 except Exception as e:

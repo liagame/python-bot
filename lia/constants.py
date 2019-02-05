@@ -3,12 +3,17 @@
 # print them out in processGameEnvironment() method in your bot
 # implementation.
 
+# The duration of the game in seconds.
+global GAME_DURATION
 # The width of the map in world units.
 global MAP_WIDTH
 # The height of the map in world units.
 global MAP_HEIGHT
-# The duration of the game in seconds.
-global GAME_DURATION
+# Map as a 2D array of booleans. If map[x][y] equals True that means that at (x,y)
+# there is an obstacle. x=0, y=0 points to bottom left corner.
+global MAP
+# Approximate location where your team was spawned.
+global SPAWN_POINT
 # The diameter of the unit in world units.
 global UNIT_DIAMETER
 # A full health of a unit when the game starts.
@@ -42,14 +47,24 @@ global VIEWING_AREA_OFFSET
 global BULLET_DIAMETER
 # The speed in world units per second with which the bullet moves forward.
 global BULLET_VELOCITY
-# The damage that a unit receives when it is hit by a bullet.
-global BULLET_DAMAGE
+# The damage that a warrior receives when it is hit by a bullet.
+global BULLET_DAMAGE_TO_WARRIOR
+# The damage that a worker receives when it is hit by a bullet.
+global BULLET_DAMAGE_TO_WORKER
 # The range of the bullet in world units.
 global BULLET_RANGE
-# The maximum duration of processing processGameEnvironment() method.
-global PROCESS_GAME_ENVIRONMENT_TIMEOUT
-# The maximum duration of processing processGameState() method.
-global PROCESS_GAME_STATE_TIMEOUT
+# Price in resources for purchasing a warrior unit.
+global WARRIOR_PRICE
+# Price in resources for purchasing a worker unit.
+global WORKER_PRICE
+# Maximum number of units on your team.
+global MAX_NUMBER_OF_UNITS
+# After how many seconds new resources stop spawning.
+global STOP_SPAWNING_AFTER
+# The maximum duration of the first update() call.
+global FIRST_TICK_TIMEOUT
+# The maximum duration of each update() call after the first one.
+global TICK_TIMEOUT
 
 
 # This method is called from networking_client.py. Do not call it again.
@@ -58,7 +73,8 @@ def load_constants(constants_json):
     global UNIT_BACKWARD_VELOCITY, UNIT_ROTATION_VELOCITY, UNIT_SLOW_ROTATION_VELOCITY, DELAY_BETWEEN_SHOTS
     global RELOAD_TIME, MAX_BULLETS, HEALTH_REGENERATION_DELAY, HEALTH_REGENERATION_PER_SECOND, VIEWING_AREA_LENGTH
     global VIEWING_AREA_WIDTH, VIEWING_AREA_OFFSET, BULLET_DIAMETER, BULLET_VELOCITY, BULLET_DAMAGE, BULLET_RANGE
-    global PROCESS_GAME_ENVIRONMENT_TIMEOUT,PROCESS_GAME_STATE_TIMEOUT
+    global FIRST_TICK_TIMEOUT, TICK_TIMEOUT, STOP_SPAWNING_AFTER, MAP, SPAWN_POINT
+    global BULLET_DAMAGE_TO_WARRIOR, BULLET_DAMAGE_TO_WORKER, WARRIOR_PRICE, WORKER_PRICE, MAX_NUMBER_OF_UNITS
 
     # Setup constants
     MAP_WIDTH = constants_json["MAP_WIDTH"]
@@ -80,7 +96,30 @@ def load_constants(constants_json):
     VIEWING_AREA_OFFSET = constants_json["VIEWING_AREA_OFFSET"]
     BULLET_DIAMETER = constants_json["BULLET_DIAMETER"]
     BULLET_VELOCITY = constants_json["BULLET_VELOCITY"]
-    BULLET_DAMAGE = constants_json["BULLET_DAMAGE"]
     BULLET_RANGE = constants_json["BULLET_RANGE"]
-    PROCESS_GAME_ENVIRONMENT_TIMEOUT = constants_json["PROCESS_GAME_ENVIRONMENT_TIMEOUT"]
-    PROCESS_GAME_STATE_TIMEOUT = constants_json["PROCESS_GAME_STATE_TIMEOUT"]
+    FIRST_TICK_TIMEOUT = constants_json["FIRST_TICK_TIMEOUT"]
+    TICK_TIMEOUT = constants_json["TICK_TIMEOUT"]
+    STOP_SPAWNING_AFTER = constants_json["STOP_SPAWNING_AFTER"]
+    MAX_NUMBER_OF_UNITS = constants_json["MAX_NUMBER_OF_UNITS"]
+    WORKER_PRICE = constants_json["WORKER_PRICE"]
+    WARRIOR_PRICE = constants_json["WARRIOR_PRICE"]
+    BULLET_DAMAGE_TO_WORKER = constants_json["BULLET_DAMAGE_TO_WORKER"]
+    BULLET_DAMAGE_TO_WORKER = constants_json["BULLET_DAMAGE_TO_WARRIOR"]
+
+    SPAWN_POINT = SpawnPoint(constants_json["SPAWN_POINT"]["x"], constants_json["SPAWN_POINT"]["y"])
+
+    MAP = []
+    for row in constants_json["MAP"]:
+        row_bool = []
+        for val in row:
+            row_bool.append(val)
+        MAP.append(row)
+    print("A")
+
+
+class SpawnPoint:
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+

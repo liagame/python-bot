@@ -1,5 +1,3 @@
-from enum import Enum
-
 
 class Api:
     def __init__(self, uid):
@@ -13,6 +11,7 @@ class Api:
         self.navigationStartEvents = []
         self.navigationStopEvents = []
         self.saySomethingEvents = []
+        self.spawnUnitEvents = []
 
     def get_index(self):
         index = self.current_index
@@ -28,8 +27,9 @@ class Api:
     def shoot(self, unit_id):
         self.shootEvents.append({"index": self.get_index(), "unitId": unit_id})
 
-    def navigation_start(self, unit_id, x, y):
-        self.navigationStartEvents.append({"index": self.get_index(), "unitId": unit_id, "x": x, "y": y})
+    def navigation_start(self, unit_id, x, y, move_backwards=False):
+        self.navigationStartEvents.append({"index": self.get_index(), "unitId": unit_id,
+                                           "x": x, "y": y, "moveBackwards": move_backwards})
 
     def navigation_stop(self, unit_id):
         self.navigationStopEvents.append({"index": self.get_index(), "unitId": unit_id})
@@ -37,16 +37,5 @@ class Api:
     def say_something(self, unit_id, text):
         self.saySomethingEvents.append({"index": self.get_index(), "unitId": unit_id, "text": text})
 
-
-class Speed(Enum):
-    NONE = 1
-    FORWARD = 2
-    BACKWARD = 3
-
-
-class Rotation(Enum):
-    NONE = 1
-    LEFT = 2
-    SLOW_LEFT = 3
-    RIGHT = 4
-    SLOW_RIGHT = 5
+    def spawn_unit(self, unit_type):
+        self.spawnUnitEvents.append({"index": self.get_index(), "type": unit_type})

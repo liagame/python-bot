@@ -1,6 +1,7 @@
 import asyncio
 import random
 
+from lia.enums import *
 from lia.api import *
 from lia import constants
 from lia import math_util
@@ -8,51 +9,48 @@ from lia.bot import Bot
 from lia.networking_client import connect
 
 
-# Here is where you control your bot. Initial implementation keeps sending units
-# to random locations on the map and makes them shoot when they see opponents.
+# Initial implementation keeps picking random locations on the map
+# and sending units there. Worker units collect resources if they
+# see them while warrior units shoot if they see opponents.
 class MyBot(Bot):
 
-    # In this method we receive the basic information about the game environment.
-    # - GameEnvironment reference: https://docs.liagame.com/api/#gameenvironment
-    def process_game_environment(self, game_environment):
-
-        # Here we store the map as a 2D array of booleans. If map[x][y] equals True that
-        # means that at (x,y) there is an obstacle. x=0, y=0 points to bottom left corner.
-        self.map = game_environment["map"]
-
-    # This is the main method where you control your bot. 10 times per game second it
-    # receives current game state. Use Api object to call actions on your units.
+    # This method is called 10 times per game second and holds current
+    # game state. Use Api object to call actions on your units.
     # - GameState reference: https://docs.liagame.com/api/#gamestate
     # - Api reference:       https://docs.liagame.com/api/#api-object
-    def process_game_state(self, game_state, api):
+    def update(self, state, api):
+
+        # If you have enough resources to spawn a new warrior unit then spawn it.
+        if state["resources"] >= constants.WARRIOR_PRICE:
+            api.spawn_unit(UnitType.WARRIOR)
 
         # We iterate through all of our units that are still alive.
-        for unit in game_state["units"]:
-
-            # If the unit is not going anywhere, we choose a new valid point on the
-            # map and send the unit there.
+        for unit in state["units"]:
+            # If the unit is not going anywhere, we send it
+            # to a random valid location on the map.
             if len(unit["navigationPath"]) == 0:
 
-                x = None
-                y = None
-
-                # Generate new x and y until you get a position on the map where there
-                # is no obstacle.
+                # Generate new x and y until you get a position on the map
+                # where there is no obstacle.
                 while True:
-                    x = random.randint(0, len(self.map) - 1)
-                    y = random.randint(0, len(self.map[0]) - 1)
-                    # False means that on (x,y) there is no obstacle.
-                    if self.map[x][y] is False:
+                    x = random.randint(0, constants.MAP_WIDTH - 1)
+                    y = random.randint(0, constants.MAP_HEIGHT - 1)
+
+                    # If map[x][y] equals false it means that at (x,y) there is no obstacle.
+                    if constants.MAP[x][y] is False:
+                        # Send the unit to (x, y)
+                        api.navigation_start(unit["id"], x, y)
                         break
 
-                # Make the unit go to the chosen x and y.
-                api.navigation_start(unit["id"], x, y)
+            # If the unit is a worker and it sees at least one resource
+            # then make it go to the first resource to collect it.
+            if unit["type"] == UnitType.WORKER and len(unit["resourcesInView"]) > 0:
+                resource = unit["resourcesInView"][0]
+                api.navigation_start(unit["id"], resource["x"], resource["y"])
 
-            # If the unit sees an opponent then make it shoot.
-            if len(unit["opponentsInView"]) > 0:
+            # If the unit is a warrior and it sees an opponent then make it shoot.
+            if unit["type"] == UnitType.WARRIOR and len(unit["opponentsInView"]) > 0:
                 api.shoot(unit["id"])
-
-                # Don't forget to make your unit brag. :)
                 api.say_something(unit["id"], "I see you!")
 
 
