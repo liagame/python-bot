@@ -114,7 +114,6 @@ def load_constants(constants_json):
         for val in row:
             row_bool.append(val)
         MAP.append(row)
-    print("A")
 
 
 class SpawnPoint:
