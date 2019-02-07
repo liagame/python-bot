@@ -19,10 +19,10 @@ class Api:
         return index
 
     def set_speed(self, unit_id, speed):
-        self.speedEvents.append({"index": self.get_index(), "unitId": unit_id, "speed": speed.name})
+        self.speedEvents.append({"index": self.get_index(), "unitId": unit_id, "speed": speed})
 
     def set_rotation(self, unit_id, rotation):
-        self.rotationEvents.append({"index": self.get_index(), "unitId": unit_id, "rotation": rotation.name})
+        self.rotationEvents.append({"index": self.get_index(), "unitId": unit_id, "rotation": rotation})
 
     def shoot(self, unit_id):
         self.shootEvents.append({"index": self.get_index(), "unitId": unit_id})
