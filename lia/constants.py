@@ -104,7 +104,7 @@ def load_constants(constants_json):
     WORKER_PRICE = constants_json["WORKER_PRICE"]
     WARRIOR_PRICE = constants_json["WARRIOR_PRICE"]
     BULLET_DAMAGE_TO_WORKER = constants_json["BULLET_DAMAGE_TO_WORKER"]
-    BULLET_DAMAGE_TO_WORKER = constants_json["BULLET_DAMAGE_TO_WARRIOR"]
+    BULLET_DAMAGE_TO_WARRIOR = constants_json["BULLET_DAMAGE_TO_WARRIOR"]
 
     SPAWN_POINT = SpawnPoint(constants_json["SPAWN_POINT"]["x"], constants_json["SPAWN_POINT"]["y"])
 
